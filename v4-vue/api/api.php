@@ -11,7 +11,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 // CORS : autoriser le front à appeler l'API
 header('Access-Control-Allow-Origin: *');   // en production : l'URL exacte du front
-header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Methods: GET,POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {  // requête « preflight »
     http_response_code(204);
@@ -33,25 +33,52 @@ if (($parties[0] ?? '') !== 'api' || ($parties[1] ?? '') !== 'formations') {
     repondre(404, ['erreur' => 'Ressource inconnue']);
 }
 
-if ($methode !== 'GET') {
-    header('Allow: GET');
-    repondre(405, ['erreur' => 'Méthode non autorisée']);
-}
-
+// if ($methode !== 'GET') {
+    // }
+    
 $db = getDb();
 $id = $parties[2] ?? null;
-
-if ($id === null) {
-    // Collection
-    $rows = $db->query('SELECT * FROM formations ORDER BY niveau, titre')->fetchAll();
-    repondre(200, $rows);
+if($methode === 'GET')
+{
+    
+    if ($id === null) 
+        {
+            // Collection
+        $rows = $db->query('SELECT * FROM formations ORDER BY niveau, titre')->fetchAll();
+        repondre(200, $rows);
+        }
+        
+        // Élément
+        $stmt = $db->prepare('SELECT * FROM formations WHERE id = ?');
+        $stmt->execute([(int)$id]);
+        $formation = $stmt->fetch();
+        
+        $formation? repondre(200, $formation) : repondre(404, ['erreur' => "Formation $id introuvable"]);
+    
 }
+if($methode === 'POST')
+    {
+        $donnees = json_decode(file_get_contents('php://input'),true);
 
-// Élément
-$stmt = $db->prepare('SELECT * FROM formations WHERE id = ?');
-$stmt->execute([(int)$id]);
-$formation = $stmt->fetch();
+        $titre =trim($donnees['titre'] ?? '');
+        $description = trim($donnees['description'] ?? '');
+        $niveau = trim($donnees['niveau'] ?? '');
 
-$formation
-    ? repondre(200, $formation)
-    : repondre(404, ['erreur' => "Formation $id introuvable"]);
+        if(empty($titre) || empty($description) || !in_array($niveau,['L1','L2','L3']))repondre(400,['erreur'=>'Champs invalides ou manquants']);
+
+        $stmt = $db->prepare('INSERT INTO formations (titre, description, niveau) VALUES (?, ?, ?)');
+        $stmt->execute([$titre, $description, $niveau]);
+
+        $nouvelleFormation = [
+            'id' => (int)$db->lastInsertId(),
+            'titre' => $titre,
+            'description' => $description,
+            'niveau' => $niveau
+        ];
+
+        repondre(201, $nouvelleFormation);
+        
+        }
+header('Allow: GET,POST');
+repondre(405, ['erreur' => 'Méthode non autorisée']);
+    

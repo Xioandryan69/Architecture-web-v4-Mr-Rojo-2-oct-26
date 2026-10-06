@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Formations — V4 Vue.js</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <!-- Vue 3 via CDN : pas d'outil de build pour cette démo -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
@@ -51,6 +51,6 @@
         </section>
     </div>
 
-    <script src="app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

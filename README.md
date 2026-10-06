@@ -15,8 +15,8 @@
 
 
 
-+ [ ] ajouter le reperotre de v4 vierge 
++ [X] ajouter le reperotre de v4 vierge 
 
 
-+ [ ] ajouter le repertoire de code igniter et aussi flight php 
++ [X] ajouter le repertoire de code igniter et aussi flight php 
 
