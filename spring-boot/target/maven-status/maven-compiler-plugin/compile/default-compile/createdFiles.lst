@@ -1,0 +1,4 @@
+com/example/formations/model/Formation.class
+com/example/formations/controller/FormationController.class
+com/example/formations/FormationsApplication.class
+com/example/formations/repository/FormationRepository.class

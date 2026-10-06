@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Formations — V4 Vue.js</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Vue 3 via CDN : pas d'outil de build pour cette démo -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Nos formations</h1>
+            <p>V4 — interface générée par Vue.js, données via l'API REST</p>
+        </header>
+
+        <!-- Filtre : montre que l'interface suit l'état, sans toucher au DOM -->
+        <nav class="filtres">
+            <button v-for="n in niveaux" :key="n"
+                    :class="{ actif: n === filtre }"
+                    @click="filtre = n">{{ n }}</button>
+
+        <input type="search" 
+            v-model="recherche" 
+            placeholder="Rechercher par titre..." 
+            class="champ-recherche">
+        </nav>
+
+        <p v-if="erreur" class="message">{{ erreur }}</p>
+        <p v-else-if="chargement" class="message">Chargement…</p>
+
+        <main v-else class="liste">
+            <formation-card v-for="f in formationsFiltrees" :key="f.id" :formation="f" />
+        </main>
+
+                <!-- Formulaire d'ajout déplacé en dehors de <main> -->
+        <section class="formulaire-ajout">
+            <h2>Ajouter une formation</h2>
+            <form @submit.prevent="ajouterFormation">
+                <input type="text" v-model="nouveauTitre" placeholder="Titre" required>
+                <input type="text" v-model="nouvelleDescription" placeholder="Description" required>
+                <select v-model="nouveauNiveau" required>
+                    <option value="" disabled>Niveau</option>
+                    <option value="L1">L1</option>
+                    <option value="L2">L2</option>
+                    <option value="L3">L3</option>
+                </select>
+                <button type="submit" :disabled="envoiEnCours">Ajouter</button>
+            </form>
+            <p v-if="erreurAjout" class="erreur-form">{{ erreurAjout }}</p>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
