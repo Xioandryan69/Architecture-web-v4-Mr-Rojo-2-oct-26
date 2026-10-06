@@ -8,7 +8,8 @@ class FormationModel extends Models
 {
     protected $table ='formations';
 
-    protected $allowedFields =['id','titre','contenu'];
+    protected $primaryKey = 'id';
 
-
+    protected $allowedFields =['id','titre','description','niveau'];
+    
 }
